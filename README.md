@@ -1,5 +1,5 @@
 # tenis_savez
-seed data:
-suAdmin:
-e-mail: sa@tenis.ba
-pass: test123
+<br/> seed data: 
+<br/> suAdmin:
+<br/> e-mail: sa@tenis.ba
+<br/> pass: test123
