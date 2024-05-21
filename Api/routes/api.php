@@ -1,9 +1,8 @@
 <?php
 
-use App\Http\Controllers\ProductController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\TennisAssociationController;
 use App\Http\Controllers\UserController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,21 +15,28 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-Route::post('/users',[UserController::class, 'store']);
 
 
-Route::post('/products/find',[ProductController::class, 'find']);
-Route::post('/register',[AuthController::class,'register']);
-Route::post('/login',[AuthController::class,'login']);
-Route::middleware('auth:sanctum')->post('/products',[ProductController::class,'store']);
-Route::middleware('auth:sanctum')->put('/products/{id}',[ProductController::class,'update']);
-Route::middleware('auth:sanctum')->delete('/products/{id}',[ProductController::class,'destroy']);
-Route::middleware('auth:sanctum')->post('/logout',[AuthController::class,'logout']);
-//Route::resource('products', ProductController::class);
-//Route::get('/products/search/{name}',[ProductController::class, 'search']);
+Route::controller(AuthController::class)->group(function () {
+    Route::post('login', 'login');
+    Route::post('register', 'register');
+    Route::post('logout', 'logout');
+    Route::post('refresh', 'refresh');
 
-Route::middleware('auth:sanctum')->get('/products/search/{name}',[ProductController::class, 'search']);
+});
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::controller(UserController::class)->group(function () {
+    Route::post('users', 'store');
+    Route::post('users/find', 'find');
+    Route::delete('users/{id}', 'destroy');
+    Route::get('users/{id}', 'show');
+    Route::put('users/{id}', 'update');
+});
+
+Route::controller(TennisAssociationController::class)->group(function () {
+    Route::post('tennisAssociations', 'store');
+    Route::post('tennisAssociations/find', 'find');
+    Route::delete('tennisAssociations/{id}', 'destroy');
+    Route::get('tennisAssociations/{id}', 'show');
+    Route::put('tennisAssociations/{id}', 'update');
 });

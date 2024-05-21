@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use App\Models\Role;
+use App\Models\TennisAssociation;
 use App\Models\User;
 use App\Models\UserRole;
 use Illuminate\Database\Seeder;
@@ -25,6 +26,10 @@ class DatabaseSeeder extends Seeder
             'id'=>'bf663a8c-25da-4fb5-9ab3-b7eea439a354',
             'role_name' => 'SA'
          ]);
+        Role::create([
+            'id'=>'ca2ab5b8-395e-4306-bc2d-8478fe17e6ea',
+            'role_name' => 'Tennis association SA'
+        ]);
 
          User::create([
             'id'=>'a455671b-7b00-41fb-a7cf-0823bb2148fc',

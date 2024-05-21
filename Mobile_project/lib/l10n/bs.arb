@@ -1,4 +1,5 @@
 {
   "@@locale": "bs",
-  "LOGIN_ERROR": "Pogrešan e-mail ili lozinka"
+  "loginError": "Pogrešan e-mail ili lozinka",
+  "players": "Igrači"
 }

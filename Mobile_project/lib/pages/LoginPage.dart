@@ -22,7 +22,6 @@ class _LoginPageState extends State<LoginPage>{
   Future<void> _handleSignIn() async {
     var loginDto = LoginDto(email : _emailController.text, password: _passwordController.text);
     var response = await AuthProvider.signIn(loginDto);
-    print(response);
     if(response){
       Navigator.of(context).push(
           MaterialPageRoute(
@@ -31,7 +30,7 @@ class _LoginPageState extends State<LoginPage>{
     }
     else{
           Fluttertoast.showToast(
-          msg: AppLocalizations.of(context)!.loginError,
+          msg: AppLocalizations.of(context)!.loginError
       );
     }
   }

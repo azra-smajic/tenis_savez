@@ -3,72 +3,45 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Helpers\BaseSearchObject;
 use Illuminate\Http\Request;
+use App\Http\Services\UserService;
 
-class UserController extends Controller
+class UserController extends BaseController
 {
+    protected $userService;
+    public function __construct(UserService $userService)
+    {
+        parent::__construct(User::class);
+        $this->middleware('auth:api');
+        $this->userService = $userService;
+    }
     /**
      * Display a listing of the resource.
      */
     public function find(Request $request)
     {
-        $searchObj = BaseSearchObject::fromRequest($request);
-
-        return Product::paginate(
-            $searchObj->getPageSize(),
-            ['*'], 
-            'page', 
-            $searchObj->getPageNumber()
-        );
+        return $this->userService->findUserByParameters(BaseSearchObject::fromRequest($request));
     }
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $fields = $request->validate([
             'first_name' => 'required',
             'last_name' => 'required',
             'birth_year' => 'required',
             'sex' => 'required',
             'phone_number' => 'required',
-            'email' => 'required'
+            'email' => 'required|string|unique:users,email',
+            'tennis_association_id' => ['nullable', function ($attribute, $value, $fail) {
+                if (!empty($value) && !preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i', $value)) {
+                    $fail('The ' . $attribute . ' field must be empty or a valid UUID.');
+                }
+            }],
         ]);
-
-        return User::create($request->all());
+        return $this->userService->createUser($fields,$request->input("role_id",null));
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        return User::find($id);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        $user = User::find($id);
-        $user->update($request->all());
-        return $user;
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        return User::destroy($id);
-    }
-
-    /**
-     * Search by name
-     */
-    public function search($name)
-    {
-        return User::where('name','like', '%'.$name.'%')->get();
-    }
 }

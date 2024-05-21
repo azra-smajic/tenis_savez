@@ -3,6 +3,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:mobile_project/pages/HomePage.dart';
 import 'package:mobile_project/pages/LoginPage.dart';
+import 'package:mobile_project/pages/player/PlayerListPage.dart';
 import 'package:mobile_project/providers/baseProviders/locale_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -28,6 +29,7 @@ class MyApp extends StatelessWidget {
           routes: {
             '/login':(context)=> LoginPage(),
             '/home':(context)=> HomePage(),
+            '/playerList':(context)=> PlayerListPage(),
           },
           locale: provider.locale,
           supportedLocales: L10n.all,

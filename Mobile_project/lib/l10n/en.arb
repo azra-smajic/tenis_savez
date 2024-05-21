@@ -1,4 +1,5 @@
 {
   "@@locale": "en",
-  "loginError": "Your login attempt failed. Please try again."
+  "loginError": "Your login attempt failed. Please try again.",
+   "players": "Players"
 }

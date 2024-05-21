@@ -3,11 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Testing\Fluent\Concerns\Has;
-
+use Illuminate\Support\Facades\Auth;
 class AuthController extends Controller
 {
     public function Register(Request $request)
@@ -22,34 +20,39 @@ class AuthController extends Controller
             'email' => $fields['email'],
             'password' => bcrypt($fields['password']),
         ]);
-        $token = $user->createToken('myapptoken')->plainTextToken;
-
-        $response =[
+        $token = Auth::login($user);
+        return response()->json([
+            'status' => 'success',
+            'message' => 'User created successfully',
             'user' => $user,
-            'token' => $token
-        ];
-        return response($response, 201);
+            'authorisation' => [
+                'token' => $token,
+                'type' => 'bearer',
+            ]
+        ]);
     }
     public function Login(Request $request)
     {
-        $fields = $request->validate([
-            'email' => 'required|string',
+        $request->validate([
+            'email' => 'required|string|email',
             'password' => 'required|string',
         ]);
+        $credentials = $request->only('email', 'password');
 
-        $user = User::where('email',$fields['email'])->first();
-        if(!$user || !Hash::check($fields['password'], $user->password)){
-            return [
-                'message'=>'Username or password does not match'
-            ];
+        $token = Auth::attempt($credentials);
+        if (!$token) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Unauthorized',
+            ], 401);
         }
-        $token = $user->createToken('myapptoken')->plainTextToken;
 
-        $response =[
+        $user = Auth::user();
+        return response()->json([
+            'status' => 'success',
             'user' => $user,
-            'token' => $token
-        ];
-        return response($response, 201);
+            'token' => $token,
+        ]);
     }
     public function Logout(Request $request){
         auth()->user()->tokens()->delete();
@@ -57,5 +60,17 @@ class AuthController extends Controller
         return [
             'message' => 'Logout successful'
         ];
+    }
+
+    public function Refresh()
+    {
+        return response()->json([
+            'status' => 'success',
+            'user' => Auth::user(),
+            'authorisation' => [
+                'token' => Auth::refresh(),
+                'type' => 'bearer',
+            ]
+        ]);
     }
 }
