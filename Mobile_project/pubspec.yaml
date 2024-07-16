@@ -31,7 +31,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
   async: ^2.8.0
   http: ^1.2.1
   http_parser: ^4.0.0
@@ -39,6 +38,7 @@ dependencies:
   flutter_toastr: ^1.0.1
   fluttertoast: ^8.0.8
   provider: ^5.0.0
+  localstorage: ^5.0.0
 
   flutter_localizations:
     sdk: flutter

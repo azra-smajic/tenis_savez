@@ -1,32 +1,29 @@
 import 'dart:convert';
-import 'dart:io';
 import 'dart:async';
 import 'package:http/http.dart';
-import 'package:http/io_client.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile_project/models/base_search_dto.dart';
 import '../auth_provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:http/http.dart' as http;
+import 'package:mobile_project/pages/LoginPage.dart';
 
 
 class BaseProvider<T> with ChangeNotifier {
   String? baseUrl;
   String? endpoint;
 
-  HttpClient client = new HttpClient();
-  IOClient? http;
-
   BaseProvider(String this.endpoint) {
-    baseUrl = dotenv.env['API_URL'];
-    client.badCertificateCallback = (cert, host, port) => true;
-    http = IOClient(client);
+    baseUrl = !kIsWeb ? dotenv.env['API_URL_MOBILE']! : dotenv.env['API_URL_ADMIN']!;
   }
 
   Future<T> getById(int id, [dynamic additionalData]) async {
     var url = Uri.parse("$baseUrl/$endpoint/$id");
 
     Map<String, String> headers = createHeaders();
-    var response = await http!.get(url, headers: headers);
+    var response = await http.get(url, headers: headers);
 
     if (isValidResponseCode(response)) {
       var data = jsonDecode(response.body);
@@ -38,20 +35,20 @@ class BaseProvider<T> with ChangeNotifier {
   }
 
   Future<List<T>> get(pageNumber, pageSize, [dynamic search]) async {
-    var url = "$baseUrl/$endpoint/$pageNumber/$pageSize";
+    var url = "$baseUrl/$endpoint/find";
 
     if (search != null) {
       String queryString = getQueryString(search);
       url = url + "?" + queryString;
     }
     var uri = Uri.parse(url);
-
+    var jsonRequest = jsonEncode(BaseSearchDto(pageNumber: pageNumber, pageSize: pageSize));
     Map<String, String> headers = createHeaders();
-    var response = await http!.get(uri, headers: headers);
+    var response = await http.post(uri, headers: headers, body: jsonRequest);
 
     if (isValidResponseCode(response)) {
-      var data = jsonDecode(response.body);
-      return data.map((x) => fromJson(x)).cast<T>().toList();
+      var responseBody = jsonDecode(response.body);
+      return responseBody["data"].map((x) => fromJson(x)).cast<T>().toList();
     }
     else {
       throw Exception("Error while trying to fetch data for entry of type $endpoint");
@@ -63,7 +60,7 @@ class BaseProvider<T> with ChangeNotifier {
 
     Map<String, String> headers = createHeaders();
     var jsonRequest = jsonEncode(request);
-    var response = await http!.post(uri, headers: headers, body: jsonRequest);
+    var response = await http.post(uri, headers: headers, body: jsonRequest);
 
     if (isValidResponseCode(response)) {
       var data = jsonDecode(response.body);
@@ -79,7 +76,7 @@ class BaseProvider<T> with ChangeNotifier {
     var uri = Uri.parse(url);
     Map<String, String> headers = createHeaders();
     var response =
-    await http!.put(uri, headers: headers, body: jsonEncode(request));
+    await http.put(uri, headers: headers, body: jsonEncode(request));
 
     if (isValidResponseCode(response)) {
       var data = jsonDecode(response.body);
@@ -96,7 +93,7 @@ class BaseProvider<T> with ChangeNotifier {
 
     Map<String, String> headers = createHeaders();
 
-    var response = await http!.delete(uri, headers: headers);
+    var response = await http.delete(uri, headers: headers);
 
     if (isValidResponseCode(response)) {
       return true;
