@@ -13,6 +13,12 @@ class UserService
         $randomPassword = Str::random(6);
         EmailService::sendCreateUserMail($user['email'], $user['first_name'] . ' ' . $user['last_name'], $randomPassword);
 
+        if($roleId == null){
+            $data = json_decode(Redis::get('roles'), true);
+
+
+        }
+
         $createdUser = User::create([
             ...$user,
             'password' => bcrypt($randomPassword),
