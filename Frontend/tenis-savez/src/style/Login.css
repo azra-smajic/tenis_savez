@@ -1,0 +1,11 @@
+.sign-in-container{
+    display: flex;
+    flex-direction: column;
+}
+.background-image-sign-in{
+    width: 50%;
+    background-color: aqua;
+}
+.sign-in-form{
+    width: 50%;
+}

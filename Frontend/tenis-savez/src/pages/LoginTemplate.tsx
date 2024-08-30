@@ -1,34 +1,36 @@
-import * as React from 'react';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import CssBaseline from '@mui/material/CssBaseline';
-import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import Link from '@mui/material/Link';
-import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import Typography from '@mui/material/Typography';
+import Avatar from '@mui/material/Avatar';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Checkbox from '@mui/material/Checkbox';
 import Container from '@mui/material/Container';
+import CssBaseline from '@mui/material/CssBaseline';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Grid from '@mui/material/Grid';
+import Link from '@mui/material/Link';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
+import { observer } from 'mobx-react-lite';
+import * as React from 'react';
+import { ToastContainer } from 'react-toastify';
+import '../style/Login.css';
+import LoginViewStore from '../viewStores/LoginViewstore';
+
 
 // TODO remove, this demo shouldn't need to reset the theme.
 const defaultTheme = createTheme();
 
-export default function Login() {
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
-  };
-
+const Login = observer(() => {
+  const loginViewStore = React.useMemo(() => new LoginViewStore(), []);
+  const { loginModel, handleSubmit, setEmail, setPassword } = loginViewStore;
+  const { email, password } = loginModel;
   return (
     <ThemeProvider theme={defaultTheme}>
-      <Container component="main" maxWidth="xs">
+      <Container className='sign-in-container'>
+      <Container className='background-image-sign-in'>
+      </Container>
+      <Container component="main" maxWidth="xs" className='sign-in-form'>
         <CssBaseline />
         <Box
           sx={{
@@ -44,7 +46,7 @@ export default function Login() {
           <Typography component="h1" variant="h5">
             Sign in
           </Typography>
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+          <Box component="form"  noValidate sx={{ mt: 1 }}>
             <TextField
               margin="normal"
               required
@@ -54,6 +56,8 @@ export default function Login() {
               name="email"
               autoComplete="email"
               autoFocus
+              value={email}
+              onChange={setEmail}
             />
             <TextField
               margin="normal"
@@ -64,6 +68,8 @@ export default function Login() {
               type="password"
               id="password"
               autoComplete="current-password"
+              value={password}
+              onChange={setPassword}
             />
             <FormControlLabel
               control={<Checkbox value="remember" color="primary" />}
@@ -74,6 +80,7 @@ export default function Login() {
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
+              onClick={handleSubmit}
             >
               Sign In
             </Button>
@@ -92,6 +99,9 @@ export default function Login() {
           </Box>
         </Box>
       </Container>
+      </Container>
+    <ToastContainer />
     </ThemeProvider>
   );
-}
+});
+export default Login;
